@@ -36,46 +36,32 @@
   }
   .wrap{max-width:960px;margin:0 auto;padding:0 20px 60px;}
 
-  /* HEADER COM A SUA LOGO REAL COPIADA */
+  /* HEADER */
   .header{
     background:linear-gradient(180deg,#141416,#0E0E10);
     border-bottom:3px solid var(--yellow);
     padding:28px 20px 22px;
     margin-bottom:28px;
   }
-  .header-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:20px;}
-  
-  /* CAIXINHA QUADRADA DA SUA LOGO */
-  .logo-box{
-    width:58px;
-    height:58px;
-    border-radius:10px;
-    overflow:hidden; /* Garante que a foto respeite o cantinho arredondado da caixinha */
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  .header-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:16px;}
+  .logo-mark{
+    width:54px;height:54px;border-radius:8px;
+    background:var(--yellow);
+    display:flex;align-items:center;justify-content:center;
     flex-shrink:0;
-    border: 1px solid var(--border-strong);
   }
-  .logo-img{
-    width:100%;
-    height:100%;
-    object-fit:cover; /* Faz a foto preencher o quadradinho perfeitamente */
-  }
-
+  .logo-mark svg{width:32px;height:32px;}
   .brand-name{
     font-family:'Oswald',sans-serif;
     font-weight:700;
     font-size:26px;
     letter-spacing:0.5px;
     text-transform:uppercase;
-    color:#FFFFFF; /* "SÓ VITÓRIA" EM BRANCO */
+    color:var(--text);
     margin:0;
     line-height:1.1;
   }
-  .brand-name span{
-    color:var(--yellow); /* "MOTOS" EM AMARELO NO TOM EXATO DO SITE */
-  }
+  .brand-name span{color:var(--yellow);}
   .brand-tag{
     font-size:12px;
     color:var(--text-faint);
@@ -298,6 +284,71 @@
 
   .status-msg{font-size:13px;color:var(--text-faint);text-align:center;padding:14px 0;}
 
+  /* GASTOS */
+  .gasto-list{margin-bottom:16px;}
+  .gasto-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:9px 0;
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+  }
+  .gasto-item:last-child{border-bottom:none;}
+  .gasto-desc{font-weight:600;}
+  .gasto-date{color:var(--text-faint);font-size:12px;}
+  .gasto-value{font-weight:600;color:var(--red);white-space:nowrap;margin-left:10px;}
+  .gasto-del{
+    background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;
+    padding:2px 6px;margin-left:6px;
+  }
+  .gasto-del:hover{color:var(--red);}
+  .gasto-total{
+    display:flex;justify-content:space-between;font-size:13px;font-weight:600;
+    padding-top:10px;margin-top:4px;border-top:1px solid var(--border-strong);
+  }
+  .divider-label{
+    font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-faint);
+    margin:16px 0 8px;
+  }
+
+  /* LOGIN */
+  .center-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .auth-box{
+    width:100%;
+    max-width:380px;
+    background:var(--surface1);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:28px 26px;
+  }
+  .auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+  .auth-title{font-family:'Oswald',sans-serif;font-size:15px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.6px;margin:0 0 16px;}
+  .auth-error{
+    background:var(--red-bg);color:var(--red);font-size:13px;
+    padding:9px 12px;border-radius:8px;margin-bottom:14px;display:none;
+  }
+  .auth-error.show{display:block;}
+  .auth-switch{text-align:center;font-size:13px;color:var(--text-dim);margin-top:16px;}
+  .auth-switch a{color:var(--yellow);cursor:pointer;text-decoration:none;font-weight:600;}
+  .setup-help{
+    font-size:12px;color:var(--text-faint);line-height:1.7;margin-bottom:14px;
+    background:var(--surface2);padding:12px 14px;border-radius:8px;
+  }
+  .setup-help a{color:var(--yellow);}
+  .setup-help code{color:var(--yellow);}
+  .user-bar{
+    max-width:960px;margin:0 auto;display:flex;justify-content:flex-end;
+    align-items:center;gap:10px;padding:10px 20px 0;font-size:13px;color:var(--text-dim);
+  }
+  .user-bar a{color:var(--yellow);cursor:pointer;font-weight:600;}
+
   @media(max-width:480px){
     .field-row{grid-template-columns:1fr;}
   }
@@ -305,14 +356,57 @@
 </head>
 <body>
 
+<!-- TELA DE LOGIN / CRIAR CONTA (Firebase Authentication) -->
+<div class="center-screen" id="authScreen" style="display:none;">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+          <path d="M5 17.5C6.38 17.5 7.5 16.38 7.5 15C7.5 13.62 6.38 12.5 5 12.5C3.62 12.5 2.5 13.62 2.5 15C2.5 16.38 3.62 17.5 5 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
+          <path d="M19 17.5C20.38 17.5 21.5 16.38 21.5 15C21.5 13.62 20.38 12.5 19 12.5C17.62 12.5 16.5 13.62 16.5 15C16.5 16.38 17.62 17.5 19 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
+          <path d="M5 15L9 8H13L15 12H19" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 8L11 12H15" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9" cy="8" r="1.3" fill="#1A1300"/>
+        </svg>
+      </div>
+      <div><p class="brand-name" style="font-size:18px;">Só <span>Vitória</span> Motos</p></div>
+    </div>
+    <p class="auth-title" style="margin-top:0;" id="authModeLabel">Entrar</p>
+    <div class="auth-error" id="authError"></div>
+    <form id="authForm">
+      <div class="field"><label>E-mail</label><input type="email" id="authEmail" required placeholder="voce@exemplo.com"></div>
+      <div class="field"><label>Senha</label><input type="password" id="authSenha" required minlength="6" placeholder="Mínimo 6 caracteres"></div>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="authSubmitBtn">Entrar</button>
+      </div>
+    </form>
+    <p class="auth-switch" id="authSwitchLine">
+      <span id="authSwitchText">Ainda não tem conta?</span> <a id="authSwitchLink">Criar conta</a>
+    </p>
+    <p class="auth-switch"><a id="forgotLink">Esqueci minha senha</a></p>
+  </div>
+</div>
+
+<div id="appScreen" style="display:none;">
+
+<div class="user-bar">
+  <span id="userEmailLabel"></span>
+  <a id="logoutLink">Sair</a>
+</div>
+
 <div class="header">
   <div class="header-inner">
-    <!-- Caixa quadrada contendo a sua imagem oficial carregada localmente -->
-    <div class="logo-box">
-      <img src="EEC90E80-6102-4E3C-9BCE-D0A2170D912D.jpeg" alt="Só Vitória Motos Logo" class="logo-img">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 17.5C6.38 17.5 7.5 16.38 7.5 15C7.5 13.62 6.38 12.5 5 12.5C3.62 12.5 2.5 13.62 2.5 15C2.5 16.38 3.62 17.5 5 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
+        <path d="M19 17.5C20.38 17.5 21.5 16.38 21.5 15C21.5 13.62 20.38 12.5 19 12.5C17.62 12.5 16.5 13.62 16.5 15C16.5 16.38 17.62 17.5 19 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
+        <path d="M5 15L9 8H13L15 12H19" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 8L11 12H15" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="9" cy="8" r="1.3" fill="#1A1300"/>
+      </svg>
     </div>
     <div>
-      <p class="brand-name">Só Vitória <span>Motos</span></p>
+      <p class="brand-name">Só <span>Vitória</span> Motos</p>
       <p class="brand-tag">Controle de compra e venda</p>
     </div>
   </div>
@@ -334,11 +428,12 @@
   </div>
 
   <div id="listWrap">
-    <div class="status-msg">Carregando dados do Firebase...</div>
+    <div class="status-msg">Carregando dados...</div>
   </div>
 
 </div>
 
+<!-- MODAL: Adicionar/Editar -->
 <div class="modal-overlay" id="modalForm">
   <div class="modal">
     <h2 id="formTitle">Nova moto</h2>
@@ -370,6 +465,7 @@
   </div>
 </div>
 
+<!-- MODAL: Vender -->
 <div class="modal-overlay" id="modalSell">
   <div class="modal">
     <h2>Registrar venda</h2>
@@ -386,22 +482,33 @@
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<!-- MODAL: Gastos -->
+<div class="modal-overlay" id="modalGasto">
+  <div class="modal">
+    <h2>Gastos da moto</h2>
+    <input type="hidden" id="gMotoId">
+    <div class="gasto-list" id="gastoList"></div>
+    <div class="gasto-total" id="gastoTotalLine"></div>
+    <p class="divider-label">Adicionar novo gasto</p>
+    <form id="gastoForm">
+      <div class="field"><label>O que foi</label><input type="text" id="gDescricao" required placeholder="Troca de pneu dianteiro"></div>
+      <div class="field-row">
+        <div class="field"><label>Valor (R$)</label><input type="number" step="0.01" id="gValor" required placeholder="180"></div>
+        <div class="field"><label>Data</label><input type="date" id="gData" required></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="btnCloseGasto">Fechar</button>
+        <button type="submit" class="btn btn-primary">Adicionar gasto</button>
+      </div>
+    </form>
+  </div>
+</div>
 
+</div><!-- /appScreen -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.15.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.15.0/firebase-auth-compat.min.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDet_nd2AfZAt0W_E7oP96ZEzOX0Ba1Uw8",
-  authDomain: "sovitoriamotos-2e56f.firebaseapp.com",
-  projectId: "sovitoriamotos-2e56f",
-  storageBucket: "sovitoriamotos-2e56f.firebasestorage.app",
-  messagingSenderId: "364373355687",
-  appId: "1:364373355687:web:b43a84b14dca124014ff82"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 let motos = [];
 let currentFilter = 'estoque';
 let searchTerm = '';
@@ -409,24 +516,34 @@ let searchTerm = '';
 const fmtMoney = v => (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const fmtDate = d => { if(!d) return '—'; const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; };
 
-function loadData(){
-  db.collection('motos').onSnapshot((snapshot) => {
+async function loadData(){
+  try{
+    const res = await window.storage.get('motos-db', false);
+    motos = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
     motos = [];
-    snapshot.forEach((doc) => {
-      motos.push({ id: doc.id, ...doc.data() });
-    });
-    render();
-  }, (error) => {
-    console.error("Erro ao escutar dados do Firestore: ", error);
-    document.getElementById('listWrap').innerHTML = `<div class="status-msg" style="color:var(--red)">Erro ao conectar com o banco de dados. Verifique a configuração ou regras no painel do Firebase.</div>`;
-  });
+  }
+  render();
+}
+
+async function saveData(){
+  try{
+    await window.storage.set('motos-db', JSON.stringify(motos), false);
+  }catch(e){
+    console.error('Erro ao salvar', e);
+    alert('Não foi possível salvar os dados agora. Tente novamente.');
+  }
+}
+
+function gastosTotal(m){
+  return (m.gastos||[]).reduce((s,g)=>s+Number(g.valor||0),0);
 }
 
 function calcDash(){
   const emEstoque = motos.filter(m=>m.status==='estoque');
   const vendidas = motos.filter(m=>m.status==='vendida');
-  const totalInvestido = emEstoque.reduce((s,m)=>s+Number(m.valorCompra||0),0);
-  const lucroTotal = vendidas.reduce((s,m)=>s+(Number(m.valorVenda||0)-Number(m.valorCompra||0)),0);
+  const totalInvestido = emEstoque.reduce((s,m)=>s+Number(m.valorCompra||0)+gastosTotal(m),0);
+  const lucroTotal = vendidas.reduce((s,m)=>s+(Number(m.valorVenda||0)-(Number(m.valorCompra||0)+gastosTotal(m))),0);
   const ticketMedio = vendidas.length ? lucroTotal/vendidas.length : 0;
   return {emEstoque:emEstoque.length, totalInvestido, vendidas:vendidas.length, lucroTotal, ticketMedio};
 }
@@ -482,16 +599,22 @@ function renderList(){
 
 function cardHtml(m){
   const vendida = m.status==='vendida';
+  const gTotal = gastosTotal(m);
   let finHtml = `<div class="fin-row"><span class="label">Compra</span><span class="value">${fmtMoney(m.valorCompra)}</span></div>`;
+  if(gTotal>0){
+    finHtml += `<div class="fin-row"><span class="label">Gastos (${(m.gastos||[]).length})</span><span class="value neg">${fmtMoney(gTotal)}</span></div>`;
+  }
   if(vendida){
-    const lucro = Number(m.valorVenda||0) - Number(m.valorCompra||0);
+    const lucro = Number(m.valorVenda||0) - (Number(m.valorCompra||0) + gTotal);
     finHtml += `<div class="fin-row"><span class="label">Venda</span><span class="value">${fmtMoney(m.valorVenda)}</span></div>`;
     finHtml += `<div class="fin-row"><span class="label">Lucro</span><span class="value ${lucro>=0?'pos':'neg'}">${fmtMoney(lucro)}</span></div>`;
   }
   const actions = vendida
-    ? `<button class="btn btn-sm" onclick="openEdit('${m.id}')">Editar</button>
+    ? `<button class="btn btn-sm" onclick="openGasto('${m.id}')">Gastos</button>
+       <button class="btn btn-sm" onclick="openEdit('${m.id}')">Editar</button>
        <button class="btn btn-sm btn-danger" onclick="removeMoto('${m.id}')">Excluir</button>`
     : `<button class="btn btn-sm btn-primary" onclick="openSell('${m.id}')">Vender</button>
+       <button class="btn btn-sm" onclick="openGasto('${m.id}')">Gastos</button>
        <button class="btn btn-sm" onclick="openEdit('${m.id}')">Editar</button>
        <button class="btn btn-sm btn-danger" onclick="removeMoto('${m.id}')">Excluir</button>`;
 
@@ -505,7 +628,7 @@ function cardHtml(m){
       <p class="moto-meta">${m.ano||'—'} · ${m.cor||'Cor não informada'}${m.km ? ' · '+Number(m.km).toLocaleString('pt-BR')+' km' : ''}</p>
       ${finHtml}
     </div>
-    <div class="card-actions">${actions}</div>
+    <div class="card-actions" style="flex-wrap:wrap;">${actions}</div>
   </div>`;
 }
 
@@ -514,6 +637,7 @@ function render(){
   renderList();
 }
 
+/* TABS */
 document.querySelectorAll('.tab').forEach(tab=>{
   tab.addEventListener('click', ()=>{
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -523,11 +647,13 @@ document.querySelectorAll('.tab').forEach(tab=>{
   });
 });
 
+/* SEARCH */
 document.getElementById('searchInput').addEventListener('input', e=>{
   searchTerm = e.target.value;
   renderList();
 });
 
+/* MODAL: FORM (add/edit) */
 const modalForm = document.getElementById('modalForm');
 const motoForm = document.getElementById('motoForm');
 
@@ -575,25 +701,23 @@ motoForm.addEventListener('submit', async e=>{
     fornecedor: document.getElementById('fFornecedor').value.trim(),
     obs: document.getElementById('fObs').value.trim(),
   };
-
-  try {
-    if(id){
-      await db.collection('motos').doc(id).update(data);
-    } else {
-      const novaMoto = {
-        status: 'estoque',
-        criadoEm: Date.now(),
-        ...data
-      };
-      await db.collection('motos').add(novaMoto);
-    }
-    modalForm.classList.remove('open');
-  } catch (error) {
-    console.error("Erro ao salvar no banco:", error);
-    alert("Houve um erro ao salvar os dados no Firebase.");
+  if(id){
+    const m = motos.find(x=>x.id===id);
+    Object.assign(m, data);
+  } else {
+    motos.push({
+      id: 'm_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+      status:'estoque',
+      criadoEm: Date.now(),
+      ...data
+    });
   }
+  modalForm.classList.remove('open');
+  render();
+  await saveData();
 });
 
+/* MODAL: SELL */
 const modalSell = document.getElementById('modalSell');
 const sellForm = document.getElementById('sellForm');
 
@@ -611,42 +735,276 @@ sellForm.addEventListener('submit', async e=>{
   const id = document.getElementById('sMotoId').value;
   const m = motos.find(x=>x.id===id);
   if(!m) return;
-
-  const sellData = {
-    status: 'vendida',
-    valorVenda: document.getElementById('sValorVenda').value,
-    dataVenda: document.getElementById('sDataVenda').value,
-    comprador: document.getElementById('sComprador').value.trim()
-  };
-
-  try {
-    await db.collection('motos').doc(id).update(sellData);
-    modalSell.classList.remove('open');
-  } catch (error) {
-    console.error("Erro ao registrar venda:", error);
-    alert("Houve um erro ao registrar a venda.");
-  }
+  m.status = 'vendida';
+  m.valorVenda = document.getElementById('sValorVenda').value;
+  m.dataVenda = document.getElementById('sDataVenda').value;
+  m.comprador = document.getElementById('sComprador').value.trim();
+  modalSell.classList.remove('open');
+  render();
+  await saveData();
 });
 
+/* DELETE */
 async function removeMoto(id){
   const m = motos.find(x=>x.id===id);
   if(!m) return;
   if(!confirm(`Excluir ${m.marca} ${m.modelo} (${m.placa||'sem placa'})? Essa ação não pode ser desfeita.`)) return;
-  
-  try {
-    await db.collection('motos').doc(id).delete();
-  } catch (error) {
-    console.error("Erro ao deletar:", error);
-    alert("Não foi possível excluir o item do Firebase.");
-  }
+  motos = motos.filter(x=>x.id!==id);
+  render();
+  await saveData();
 }
 
+/* MODAL: GASTOS */
+const modalGasto = document.getElementById('modalGasto');
+const gastoForm = document.getElementById('gastoForm');
+
+function renderGastoList(m){
+  const list = document.getElementById('gastoList');
+  const gastos = m.gastos||[];
+  if(gastos.length===0){
+    list.innerHTML = `<p class="status-msg" style="padding:6px 0;">Nenhum gasto lançado ainda.</p>`;
+  } else {
+    list.innerHTML = gastos.map(g=>`
+      <div class="gasto-item">
+        <div>
+          <div class="gasto-desc">${g.descricao}</div>
+          <div class="gasto-date">${fmtDate(g.data)}</div>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <span class="gasto-value">${fmtMoney(g.valor)}</span>
+          <button class="gasto-del" onclick="removeGasto('${g.id}')" aria-label="Excluir gasto">&times;</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('gastoTotalLine').innerHTML =
+    `<span>Total em gastos</span><span>${fmtMoney(gastosTotal(m))}</span>`;
+}
+
+function openGasto(id){
+  document.getElementById('gMotoId').value = id;
+  gastoForm.reset();
+  document.getElementById('gData').value = new Date().toISOString().slice(0,10);
+  const m = motos.find(x=>x.id===id);
+  renderGastoList(m);
+  modalGasto.classList.add('open');
+}
+
+document.getElementById('btnCloseGasto').addEventListener('click', ()=> modalGasto.classList.remove('open'));
+
+gastoForm.addEventListener('submit', async e=>{
+  e.preventDefault();
+  const id = document.getElementById('gMotoId').value;
+  const m = motos.find(x=>x.id===id);
+  if(!m) return;
+  if(!m.gastos) m.gastos = [];
+  m.gastos.push({
+    id: 'g_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+    descricao: document.getElementById('gDescricao').value.trim(),
+    valor: document.getElementById('gValor').value,
+    data: document.getElementById('gData').value
+  });
+  gastoForm.reset();
+  document.getElementById('gData').value = new Date().toISOString().slice(0,10);
+  renderGastoList(m);
+  render();
+  await saveData();
+});
+
+async function removeGasto(gastoId){
+  const id = document.getElementById('gMotoId').value;
+  const m = motos.find(x=>x.id===id);
+  if(!m) return;
+  m.gastos = (m.gastos||[]).filter(g=>g.id!==gastoId);
+  renderGastoList(m);
+  render();
+  await saveData();
+}
+
+modalGasto.addEventListener('click', e=>{ if(e.target===modalGasto) modalGasto.classList.remove('open'); });
+
+/* close modal clicking overlay */
 [modalForm, modalSell].forEach(ov=>{
   ov.addEventListener('click', e=>{ if(e.target===ov) ov.classList.remove('open'); });
 });
 
-loadData();
-</script>
+/* ============ FIREBASE AUTHENTICATION ============ */
+/* Configuração do projeto Firebase — Substitua com as chaves do seu Firebase Console */
+const firebaseConfig = {
+  apiKey: "AIzaSyDet_nd2AfZAt0W_E7oP96ZEzOX0Ba1Uw8",
+  authDomain: "sovitoriamotos-2e56f.firebaseapp.com",
+  projectId: "sovitoriamotos-2e56f",
+  storageBucket: "sovitoriamotos-2e56f.firebasestorage.app",
+  messagingSenderId: "364373355687",
+  appId: "1:364373355687:web:b43a84b14dca124014ff82"
+};
 
+const authScreen = document.getElementById('authScreen');
+const appScreen = document.getElementById('appScreen');
+let authMode = 'login';
+
+function showOnly(el){
+  [authScreen, appScreen].forEach(s=> s.style.display='none');
+  el.style.display = (el===appScreen) ? 'block' : 'flex';
+}
+
+/* FUNÇÃO PARA ADICIONAR O USERID NAS MOTOS QUE ESTÃO SEM CONTA */
+async function vincularMotosAntigas(novoUserId) {
+  try {
+    // Validação de segurança caso falte o script no HTML
+    if (typeof firebase.firestore !== 'function') {
+      console.error("ERRO CRÍTICO: O script do Firestore não foi adicionado no seu arquivo HTML!");
+      alert("ATENÇÃO: Vá no seu arquivo HTML e adicione a tag do script do firebase-firestore-compat.js logo abaixo das outras tags do Firebase.");
+      return;
+    }
+
+    const db = firebase.firestore();
+    
+    // Busca todas as motos da sua coleção
+    const querySnapshot = await db.collection("motos").get();
+    
+    let contador = 0;
+
+    // Passa de moto em moto checando se ela precisa receber o dono
+    // Alterado para um loop 'for...of' comum para garantir que os 'await' internos barrem o fluxo corretamente
+    for (const documento of querySnapshot.docs) {
+      const dadosDaMoto = documento.data();
+
+      // Se a moto não tiver o campo userId (caso das suas antigas)
+      if (!dadosDaMoto.userId) {
+        await db.collection("motos").doc(documento.id).update({
+          userId: novoUserId
+        });
+        contador++;
+      }
+    }
+
+    if (contador > 0) {
+      console.log(`Sucesso: ${contador} motos antigas foram vinculadas à sua conta!`);
+      // Recarrega os dados na tela para garantir que as motos novas apareçam
+      if (typeof loadData === "function") loadData(); 
+    } else {
+      console.log("Nenhuma moto antiga pendente de vinculação encontrada.");
+    }
+
+  } catch (error) {
+    console.error("Erro ao migrar as motos antigas:", error);
+  }
+}
+
+function boot(){
+  try{
+    firebase.initializeApp(firebaseConfig);
+  }catch(e){
+    document.getElementById('authError').textContent = 'O sistema ainda não está conectado ao Firebase. Fale com quem configurou o app.';
+    document.getElementById('authError').classList.add('show');
+    return;
+  }
+
+  // Monitora em tempo real se o usuário está logado ou não
+  firebase.auth().onAuthStateChanged(async user=>{
+    if(user){
+      document.getElementById('userEmailLabel').textContent = user.email;
+      showOnly(appScreen);
+      
+      // Executa a migração das motos antigas logo após o login ser detectado
+      await vincularMotosAntigas(user.uid);
+      
+      if (typeof loadData === "function") loadData();
+    } else {
+      showOnly(authScreen);
+    }
+  });
+}
+
+/* Alternar entre login e cadastro */
+document.getElementById('authSwitchLink').addEventListener('click', ()=>{
+  authMode = authMode==='login' ? 'signup' : 'login';
+  document.getElementById('authModeLabel').textContent = authMode==='login' ? 'Entrar' : 'Criar conta';
+  document.getElementById('authSubmitBtn').textContent = authMode==='login' ? 'Entrar' : 'Criar conta';
+  document.getElementById('authSwitchText').textContent = authMode==='login' ? 'Ainda não tem conta?' : 'Já tem conta?';
+  document.getElementById('authSwitchLink').textContent = authMode==='login' ? 'Criar conta' : 'Entrar';
+  document.getElementById('authError').classList.remove('show');
+});
+
+/* Envio do Formulário (Login ou Cadastro) */
+document.getElementById('authForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const errEl = document.getElementById('authError');
+  errEl.classList.remove('show');
+  
+  const email = document.getElementById('authEmail').value.trim();
+  const senha = document.getElementById('authSenha').value;
+  const btn = document.getElementById('authSubmitBtn');
+  
+  btn.disabled = true;
+  btn.textContent = 'Carregando...';
+
+  try{
+    if(authMode==='login'){
+      // Realiza o Login no Firebase
+      await firebase.auth().signInWithEmailAndPassword(email, senha);
+    } else {
+      // Cria a conta no Firebase
+      await firebase.auth().createUserWithEmailAndPassword(email, senha);
+    }
+  } catch(error) {
+    // Trata os erros comuns retornados pelo Firebase em português
+    let mensagemErro = 'Ocorreu um erro. Tente novamente.';
+    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+      mensagemErro = 'E-mail ou senha inválidos.';
+    } else if (error.code === 'auth/email-already-in-use') {
+      mensagemErro = 'Este e-mail já está sendo usado por outra conta.';
+    } else if (error.code === 'auth/invalid-email') {
+      mensagemErro = 'O formato do e-mail é inválido.';
+    } else if (error.code === 'auth/weak-password') {
+      mensagemErro = 'A senha deve ter pelo menos 6 caracteres.';
+    } else {
+      mensagemErro = error.message;
+    }
+    
+    errEl.textContent = mensagemErro;
+    errEl.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = authMode==='login' ? 'Entrar' : 'Criar conta';
+  }
+});
+
+/* Ação de Logout (Sair) */
+document.getElementById('logoutLink').addEventListener('click', async e => {
+  e.preventDefault();
+  try {
+    await firebase.auth().signOut();
+  } catch (error) {
+    alert('Erro ao sair da conta: ' + error.message);
+  }
+});
+
+/* Recuperação de Senha (Esqueci minha senha) */
+document.getElementById('forgotLink').addEventListener('click', async e => {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value.trim();
+  const errEl = document.getElementById('authError');
+  errEl.classList.remove('show');
+
+  if (!email) {
+    errEl.textContent = 'Digite seu e-mail no campo acima para recuperar a senha.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  try {
+    await firebase.auth().sendPasswordResetEmail(email);
+    alert('E-mail de recuperação de senha enviado! Verifique sua caixa de entrada.');
+  } catch (error) {
+    errEl.textContent = 'Erro ao enviar e-mail: ' + error.message;
+    errEl.classList.add('show');
+  }
+});
+
+// Inicializa o Firebase ao carregar a página
+boot();
+</script>
 </body>
 </html>
