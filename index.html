@@ -362,11 +362,11 @@
     <div class="auth-logo">
       <div class="logo-mark">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
-          <path d="M5 17.5C6.38 17.5 7.5 16.38 7.5 15C7.5 13.62 6.38 12.5 5 12.5C3.62 12.5 2.5 13.62 2.5 15C2.5 16.38 3.62 17.5 5 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
-          <path d="M19 17.5C20.38 17.5 21.5 16.38 21.5 15C21.5 13.62 20.38 12.5 19 12.5C17.62 12.5 16.5 13.62 16.5 15C16.5 16.38 17.62 17.5 19 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
-          <path d="M5 15L9 8H13L15 12H19" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M9 8L11 12H15" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="9" cy="8" r="1.3" fill="#1A1300"/>
+          <path d="M5 17.5C6.38 17.5 7.5 16.38 7.5 15C7.5 13.62 6.38 12.5 5 12.5C3.62 12.5 2.5 13.62 2.5 15C2.5 16.38 3.62 17.5 5 17.5Z" stroke="#e5b800" stroke-width="1.6"/>
+          <path d="M19 17.5C20.38 17.5 21.5 16.38 21.5 15C21.5 13.62 20.38 12.5 19 12.5C17.62 12.5 16.5 13.62 16.5 15C16.5 16.38 17.62 17.5 19 17.5Z" stroke="#e5b800" stroke-width="1.6"/>
+          <path d="M5 15L9 8H13L15 12H19" stroke="#e5b800" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 8L11 12H15" stroke="#e5b800" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9" cy="8" r="1.3" fill="#e5b800"/>
         </svg>
       </div>
       <div><p class="brand-name" style="font-size:18px;">Só <span>Vitória</span> Motos</p></div>
@@ -380,10 +380,6 @@
         <button type="submit" class="btn btn-primary" style="width:100%;" id="authSubmitBtn">Entrar</button>
       </div>
     </form>
-    <p class="auth-switch" id="authSwitchLine">
-      
-    </p>
-    
   </div>
 </div>
 
@@ -398,11 +394,11 @@
   <div class="header-inner">
     <div class="logo-mark">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 17.5C6.38 17.5 7.5 16.38 7.5 15C7.5 13.62 6.38 12.5 5 12.5C3.62 12.5 2.5 13.62 2.5 15C2.5 16.38 3.62 17.5 5 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
-        <path d="M19 17.5C20.38 17.5 21.5 16.38 21.5 15C21.5 13.62 20.38 12.5 19 12.5C17.62 12.5 16.5 13.62 16.5 15C16.5 16.38 17.62 17.5 19 17.5Z" stroke="#1A1300" stroke-width="1.6"/>
-        <path d="M5 15L9 8H13L15 12H19" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M9 8L11 12H15" stroke="#1A1300" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="9" cy="8" r="1.3" fill="#1A1300"/>
+        <path d="M5 17.5C6.38 17.5 7.5 16.38 7.5 15C7.5 13.62 6.38 12.5 5 12.5C3.62 12.5 2.5 13.62 2.5 15C2.5 16.38 3.62 17.5 5 17.5Z" stroke="#e5b800" stroke-width="1.6"/>
+        <path d="M19 17.5C20.38 17.5 21.5 16.38 21.5 15C21.5 13.62 20.38 12.5 19 12.5C17.62 12.5 16.5 13.62 16.5 15C16.5 16.38 17.62 17.5 19 17.5Z" stroke="#e5b800" stroke-width="1.6"/>
+        <path d="M5 15L9 8H13L15 12H19" stroke="#e5b800" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 8L11 12H15" stroke="#e5b800" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="9" cy="8" r="1.3" fill="#e5b800"/>
       </svg>
     </div>
     <div>
@@ -518,8 +514,8 @@ const fmtDate = d => { if(!d) return '—'; const [y,m,dd]=d.split('-'); return 
 
 async function loadData(){
   try{
-    const res = await window.storage.get('motos-db', false);
-    motos = res && res.value ? JSON.parse(res.value) : [];
+    const res = localStorage.getItem('motos-db');
+    motos = res ? JSON.parse(res) : [];
   }catch(e){
     motos = [];
   }
@@ -528,7 +524,7 @@ async function loadData(){
 
 async function saveData(){
   try{
-    await window.storage.set('motos-db', JSON.stringify(motos), false);
+    localStorage.setItem('motos-db', JSON.stringify(motos));
   }catch(e){
     console.error('Erro ao salvar', e);
     alert('Não foi possível salvar os dados agora. Tente novamente.');
@@ -829,7 +825,6 @@ modalGasto.addEventListener('click', e=>{ if(e.target===modalGasto) modalGasto.c
 });
 
 /* ============ FIREBASE AUTHENTICATION ============ */
-/* Configuração do projeto Firebase — Substitua com as chaves do seu Firebase Console */
 const firebaseConfig = {
   apiKey: "AIzaSyDet_nd2AfZAt0W_E7oP96ZEzOX0Ba1Uw8",
   authDomain: "sovitoriamotos-2e56f.firebaseapp.com",
@@ -841,18 +836,16 @@ const firebaseConfig = {
 
 const authScreen = document.getElementById('authScreen');
 const appScreen = document.getElementById('appScreen');
-let authMode = 'login';
 
 function showOnly(el){
   [authScreen, appScreen].forEach(s=> s.style.display='none');
   el.style.display = (el===appScreen) ? 'block' : 'flex';
 }
 
-/* FUNÇÃO PARA ADICIONAR O USERID NAS MOTOS QUE ESTÃO SEM CONTA */
 async function vincularMotosAntigas(novoUserId) {
   try {
     if (typeof firebase.firestore !== 'function') {
-      console.error("ERRO: O script do Firestore não foi adicionado no seu arquivo HTML.");
+      console.error("Aviso: Firestore não iniciado nesta versão offline local.");
       return;
     }
 
@@ -871,8 +864,8 @@ async function vincularMotosAntigas(novoUserId) {
     }
 
     if (contador > 0) {
-      console.log(`Sucesso: ${contador} motos antigas foram vinculadas!`);
-      if (typeof loadData === "function") loadData(); 
+      console.log(`Sucesso: ${contador} motos antigas vinculadas.`);
+      await loadData(); 
     }
   } catch (error) {
     console.error("Erro ao migrar as motos antigas:", error);
@@ -885,7 +878,7 @@ function boot(){
   }catch(e){
     const errEl = document.getElementById('authError');
     if (errEl) {
-      errEl.textContent = 'O sistema ainda não está conectado ao Firebase.';
+      errEl.textContent = 'O sistema não pôde conectar ao Firebase.';
       errEl.classList.add('show');
     }
     return;
@@ -898,17 +891,13 @@ function boot(){
       showOnly(appScreen);
       
       await vincularMotosAntigas(user.uid);
-      
-      if (typeof loadData === "function") {
-        loadData();
-      }
+      await loadData();
     } else {
       showOnly(authScreen);
     }
   });
 }
 
-/* Envio do Formulário (Login ou Cadastro) */
 if (document.getElementById('authForm')) {
   document.getElementById('authForm').addEventListener('submit', async e=>{
     e.preventDefault();
@@ -951,19 +940,17 @@ if (document.getElementById('authForm')) {
   });
 }
 
-/* Ação de Logout (Sair) */
 if (document.getElementById('logoutLink')) {
   document.getElementById('logoutLink').addEventListener('click', async e => {
     e.preventDefault();
     try {
       await firebase.auth().signOut();
     } catch (error) {
-      alert('Erro ao sair da conta: ' + error.message);
+      alert('Erro ao sair: ' + error.message);
     }
   });
 }
 
-// Inicializa o Firebase ao carregar a página
 boot();
 </script>
 </body>
