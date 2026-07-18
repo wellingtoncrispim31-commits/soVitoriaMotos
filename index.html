@@ -851,26 +851,17 @@ function showOnly(el){
 /* FUNÇÃO PARA ADICIONAR O USERID NAS MOTOS QUE ESTÃO SEM CONTA */
 async function vincularMotosAntigas(novoUserId) {
   try {
-    // Validação de segurança caso falte o script no HTML
     if (typeof firebase.firestore !== 'function') {
-      console.error("ERRO CRÍTICO: O script do Firestore não foi adicionado no seu arquivo HTML!");
-      alert("ATENÇÃO: Vá no seu arquivo HTML e adicione a tag do script do firebase-firestore-compat.js logo abaixo das outras tags do Firebase.");
+      console.error("ERRO: O script do Firestore não foi adicionado no seu arquivo HTML.");
       return;
     }
 
     const db = firebase.firestore();
-    
-    // Busca todas as motos da sua coleção
     const querySnapshot = await db.collection("motos").get();
-    
     let contador = 0;
 
-    // Passa de moto em moto checando se ela precisa receber o dono
-    // Alterado para um loop 'for...of' comum para garantir que os 'await' internos barrem o fluxo corretamente
     for (const documento of querySnapshot.docs) {
       const dadosDaMoto = documento.data();
-
-      // Se a moto não tiver o campo userId (caso das suas antigas)
       if (!dadosDaMoto.userId) {
         await db.collection("motos").doc(documento.id).update({
           userId: novoUserId
@@ -880,13 +871,9 @@ async function vincularMotosAntigas(novoUserId) {
     }
 
     if (contador > 0) {
-      console.log(`Sucesso: ${contador} motos antigas foram vinculadas à sua conta!`);
-      // Recarrega os dados na tela para garantir que as motos novas apareçam
+      console.log(`Sucesso: ${contador} motos antigas foram vinculadas!`);
       if (typeof loadData === "function") loadData(); 
-    } else {
-      console.log("Nenhuma moto antiga pendente de vinculação encontrada.");
     }
-
   } catch (error) {
     console.error("Erro ao migrar as motos antigas:", error);
   }
@@ -896,112 +883,85 @@ function boot(){
   try{
     firebase.initializeApp(firebaseConfig);
   }catch(e){
-    document.getElementById('authError').textContent = 'O sistema ainda não está conectado ao Firebase. Fale com quem configurou o app.';
-    document.getElementById('authError').classList.add('show');
+    const errEl = document.getElementById('authError');
+    if (errEl) {
+      errEl.textContent = 'O sistema ainda não está conectado ao Firebase.';
+      errEl.classList.add('show');
+    }
     return;
   }
 
-  // Monitora em tempo real se o usuário está logado ou não
   firebase.auth().onAuthStateChanged(async user=>{
     if(user){
-      document.getElementById('userEmailLabel').textContent = user.email;
+      const emailLabel = document.getElementById('userEmailLabel');
+      if (emailLabel) emailLabel.textContent = user.email;
       showOnly(appScreen);
       
-      // Executa a migração das motos antigas logo após o login ser detectado
       await vincularMotosAntigas(user.uid);
       
-      if (typeof loadData === "function") loadData();
+      if (typeof loadData === "function") {
+        loadData();
+      }
     } else {
       showOnly(authScreen);
     }
   });
 }
 
-/* Alternar entre login e cadastro */
-document.getElementById('authSwitchLink').addEventListener('click', ()=>{
-  authMode = authMode==='login' ? 'signup' : 'login';
-  document.getElementById('authModeLabel').textContent = authMode==='login' ? 'Entrar' : 'Criar conta';
-  document.getElementById('authSubmitBtn').textContent = authMode==='login' ? 'Entrar' : 'Criar conta';
-  document.getElementById('authSwitchText').textContent = authMode==='login' ? 'Ainda não tem conta?' : 'Já tem conta?';
-  document.getElementById('authSwitchLink').textContent = authMode==='login' ? 'Criar conta' : 'Entrar';
-  document.getElementById('authError').classList.remove('show');
-});
-
 /* Envio do Formulário (Login ou Cadastro) */
-document.getElementById('authForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const errEl = document.getElementById('authError');
-  errEl.classList.remove('show');
-  
-  const email = document.getElementById('authEmail').value.trim();
-  const senha = document.getElementById('authSenha').value;
-  const btn = document.getElementById('authSubmitBtn');
-  
-  btn.disabled = true;
-  btn.textContent = 'Carregando...';
-
-  try{
-    if(authMode==='login'){
-      // Realiza o Login no Firebase
-      await firebase.auth().signInWithEmailAndPassword(email, senha);
-    } else {
-      // Cria a conta no Firebase
-      await firebase.auth().createUserWithEmailAndPassword(email, senha);
-    }
-  } catch(error) {
-    // Trata os erros comuns retornados pelo Firebase em português
-    let mensagemErro = 'Ocorreu um erro. Tente novamente.';
-    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-      mensagemErro = 'E-mail ou senha inválidos.';
-    } else if (error.code === 'auth/email-already-in-use') {
-      mensagemErro = 'Este e-mail já está sendo usado por outra conta.';
-    } else if (error.code === 'auth/invalid-email') {
-      mensagemErro = 'O formato do e-mail é inválido.';
-    } else if (error.code === 'auth/weak-password') {
-      mensagemErro = 'A senha deve ter pelo menos 6 caracteres.';
-    } else {
-      mensagemErro = error.message;
-    }
+if (document.getElementById('authForm')) {
+  document.getElementById('authForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const errEl = document.getElementById('authError');
+    if (errEl) errEl.classList.remove('show');
     
-    errEl.textContent = mensagemErro;
-    errEl.classList.add('show');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = authMode==='login' ? 'Entrar' : 'Criar conta';
-  }
-});
+    const email = document.getElementById('authEmail').value.trim();
+    const senha = document.getElementById('authSenha').value;
+    const btn = document.getElementById('authSubmitBtn');
+    
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Carregando...';
+    }
+
+    try{
+      await firebase.auth().signInWithEmailAndPassword(email, senha);
+    } catch(error) {
+      let mensagemErro = 'Ocorreu um erro. Tente novamente.';
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        mensagemErro = 'E-mail ou senha inválidos.';
+      } else if (error.code === 'auth/invalid-email') {
+        mensagemErro = 'O formato do e-mail é inválido.';
+      } else if (error.code === 'auth/weak-password') {
+        mensagemErro = 'A senha deve ter pelo menos 6 caracteres.';
+      } else {
+        mensagemErro = error.message;
+      }
+      
+      if (errEl) {
+        errEl.textContent = mensagemErro;
+        errEl.classList.add('show');
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    }
+  });
+}
 
 /* Ação de Logout (Sair) */
-document.getElementById('logoutLink').addEventListener('click', async e => {
-  e.preventDefault();
-  try {
-    await firebase.auth().signOut();
-  } catch (error) {
-    alert('Erro ao sair da conta: ' + error.message);
-  }
-});
-
-/* Recuperação de Senha (Esqueci minha senha) */
-document.getElementById('forgotLink').addEventListener('click', async e => {
-  e.preventDefault();
-  const email = document.getElementById('authEmail').value.trim();
-  const errEl = document.getElementById('authError');
-  errEl.classList.remove('show');
-
-  if (!email) {
-    errEl.textContent = 'Digite seu e-mail no campo acima para recuperar a senha.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  try {
-    await firebase.auth().sendPasswordResetEmail(email);
-    alert('E-mail de recuperação de senha enviado! Verifique sua caixa de entrada.');
-  } catch (error) {
-    errEl.textContent = 'Erro ao enviar e-mail: ' + error.message;
-    errEl.classList.add('show');
-  }
-});
+if (document.getElementById('logoutLink')) {
+  document.getElementById('logoutLink').addEventListener('click', async e => {
+    e.preventDefault();
+    try {
+      await firebase.auth().signOut();
+    } catch (error) {
+      alert('Erro ao sair da conta: ' + error.message);
+    }
+  });
+}
 
 // Inicializa o Firebase ao carregar a página
 boot();
