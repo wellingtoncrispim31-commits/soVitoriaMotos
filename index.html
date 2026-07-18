@@ -502,6 +502,7 @@
 
 </div><!-- /appScreen -->
 
+<!-- IMPORTAÇÕES DO FIREBASE CONFIGURADAS CORRETAMENTE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.15.0/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.15.0/firebase-auth-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.15.0/firebase-firestore-compat.min.js"></script>
@@ -513,22 +514,58 @@ let searchTerm = '';
 const fmtMoney = v => (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const fmtDate = d => { if(!d) return '—'; const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; };
 
+/* SISTEMA ATUALIZADO PARA LER DO FIRESTORE ONLINE */
 async function loadData(){
-  try{
-    const res = localStorage.getItem('motos-db');
-    motos = res ? JSON.parse(res) : [];
-  }catch(e){
+  try {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    if (typeof firebase.firestore !== 'function') {
+      console.error("Firestore não disponível.");
+      return;
+    }
+
+    const db = firebase.firestore();
+    const querySnapshot = await db.collection("motos")
+                                  .where("userId", "==", user.uid)
+                                  .get();
+    
+    motos = [];
+    querySnapshot.forEach((doc) => {
+      motos.push({ id: doc.id, ...doc.data() });
+    });
+
+  } catch(e) {
+    console.error('Erro ao carregar dados do Firebase:', e);
     motos = [];
   }
   render();
 }
 
+/* SISTEMA ATUALIZADO PARA GRAVAR NO FIRESTORE ONLINE EM TEMPO REAL */
 async function saveData(){
-  try{
-    localStorage.setItem('motos-db', JSON.stringify(motos));
-  }catch(e){
-    console.error('Erro ao salvar', e);
-    alert('Não foi possível salvar os dados agora. Tente novamente.');
+  try {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      alert('Você precisa estar logado para salvar.');
+      return;
+    }
+
+    const db = firebase.firestore();
+    
+    for (const moto of motos) {
+      moto.userId = user.uid; 
+      
+      const motoDados = { ...moto };
+      delete motoDados.id; 
+
+      await db.collection("motos").doc(moto.id).set(motoDados, { merge: true });
+    }
+
+    console.log("Dados sincronizados com o Firebase com sucesso!");
+  } catch(e) {
+    console.error('Erro ao salvar no Firebase:', e);
+    alert('Não foi possível salvar os dados online. Tente novamente.');
   }
 }
 
@@ -741,14 +778,25 @@ sellForm.addEventListener('submit', async e=>{
   await saveData();
 });
 
-/* DELETE */
-async function removeMoto(id){
-  const m = motos.find(x=>x.id===id);
-  if(!m) return;
-  if(!confirm(`Excluir ${m.marca} ${m.modelo} (${m.placa||'sem placa'})? Essa ação não pode ser desfeita.`)) return;
-  motos = motos.filter(x=>x.id!==id);
+/* DELETE - AGORA DELETA TAMBÉM DO BANCO ONLINE */
+async function removeMoto(id) {
+  const m = motos.find(x => x.id === id);
+  if (!m) return;
+  if (!confirm(`Excluir ${m.marca} ${m.modelo} (${m.placa || 'sem placa'})? Essa ação não pode ser desfeita.`)) return;
+  
+  try {
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const db = firebase.firestore();
+      await db.collection("motos").doc(id).delete();
+      console.log("Moto excluída do Firebase com sucesso.");
+    }
+  } catch (error) {
+    console.error("Erro ao deletar moto no Firebase:", error);
+  }
+
+  motos = motos.filter(x => x.id !== id);
   render();
-  await saveData();
 }
 
 /* MODAL: GASTOS */
@@ -820,7 +868,6 @@ async function removeGasto(gastoId){
 
 modalGasto.addEventListener('click', e=>{ if(e.target===modalGasto) modalGasto.classList.remove('open'); });
 
-/* close modal clicking overlay */
 [modalForm, modalSell].forEach(ov=>{
   ov.addEventListener('click', e=>{ if(e.target===ov) ov.classList.remove('open'); });
 });
@@ -846,7 +893,6 @@ function showOnly(el){
 async function vincularMotosAntigas(novoUserId) {
   try {
     if (typeof firebase.firestore !== 'function') {
-      console.error("Aviso: Firestore não iniciado nesta versão offline local.");
       return;
     }
 
@@ -866,7 +912,6 @@ async function vincularMotosAntigas(novoUserId) {
 
     if (contador > 0) {
       console.log(`Sucesso: ${contador} motos antigas vinculadas.`);
-      await loadData(); 
     }
   } catch (error) {
     console.error("Erro ao migrar as motos antigas:", error);
